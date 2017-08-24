@@ -1,0 +1,8 @@
+17:32:17.596 [main] INFO  com.gus.trace.TraceBoot - Starting TraceBoot on g1 with PID 27024 (/home/g1/git/mydev/target/classes started by g1 in /home/g1/git/mydev) 
+17:32:17.600 [main] INFO  com.gus.trace.TraceBoot - No active profile set, falling back to default profiles: default 
+17:32:19.609 [main] INFO  com.gus.trace.TraceBoot - Started TraceBoot in 2.241 seconds (JVM running for 2.593) 
+17:32:19.609 [main] INFO  com.gus.trace.TraceBoot - 启动成功 ... 
+17:32:23.540 [http-nio-8081-exec-1] INFO  com.gus.trace.aop.HttpServiceFilter - TraceInfo [traceID=3515340699781120, spanID=1503394345834, url=/mydev/s1, status=SR, parentID=null, sendTime=1503394343540] 
+17:32:23.730 [http-nio-8081-exec-2] INFO  com.gus.trace.aop.HttpServiceFilter - TraceInfo [traceID=3515340699781120, spanID=1503394351513, url=/mydev/s2, status=SR, parentID=1503394345834, sendTime=1503394343730] 
+17:32:23.743 [http-nio-8081-exec-2] INFO  com.gus.trace.aop.HttpServiceFilter - TraceInfo [traceID=3515340699781120, spanID=1503394351513, url=/mydev/s2, status=SS, parentID=1503394345834, sendTime=1503394343743] 
+17:32:23.755 [http-nio-8081-exec-1] INFO  com.gus.trace.aop.HttpServiceFilter - TraceInfo [traceID=3515340699781120, spanID=1503394345834, url=/mydev/s1, status=SS, parentID=null, sendTime=1503394343755] 
