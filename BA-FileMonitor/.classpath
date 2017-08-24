@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk8">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
@@ -16,5 +16,9 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/lib/cpdetector_1.0.10_binary/ext/antlr-2.7.4.jar"/>
+	<classpathentry kind="lib" path="C:/lib/cpdetector_1.0.10_binary/ext/chardet-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/lib/cpdetector_1.0.10_binary/ext/jargs-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/lib/cpdetector_1.0.10_binary/cpdetector_1.0.10.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
