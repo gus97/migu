@@ -1,6 +1,9 @@
 package com.gus.trace.aop;
 
-import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.net.InetAddress;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -23,42 +26,64 @@ public class HttpServiceFilter implements Filter {
 	}
 
 	@Override
-	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
-			throws IOException, ServletException {
-
-		HttpServletRequest request = (HttpServletRequest) servletRequest;
-
-		String requestUrl = request.getRequestURI();
-
-		int spanSuffix = (int) (Math.random() * (9999 - 1000 + 1)) + 1000;
+	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) {
 
 		TraceInfo before;
 
 		TraceInfo after;
 
-		// 表示根
-		if (request.getHeader("trace-id") == null) {
+		String ip = null;
 
-			before = new TraceInfo(new DistributedIDS(2).nextId(), System.currentTimeMillis() + spanSuffix, null,
-					requestUrl, "SR", System.currentTimeMillis());
-		} else {
-			before = new TraceInfo(Long.parseLong(request.getHeader("trace-id")),
-					System.currentTimeMillis() + spanSuffix, Long.parseLong(request.getHeader("span-id")), requestUrl,
-					"SR", System.currentTimeMillis());
+		try {
+			HttpServletRequest request = (HttpServletRequest) servletRequest;
+
+			String requestUrl = request.getRequestURI();
+
+			int spanSuffix = (int) (Math.random() * (9999 - 1000 + 1)) + 1000;
+
+			ip = InetAddress.getLocalHost().getHostAddress();
+
+			// 表示根
+			if (requestUrl.indexOf("favicon.ico") == -1) {
+				if (request.getHeader("trace-id") == null) {
+
+					before = new TraceInfo(new DistributedIDS(2).nextId(), System.currentTimeMillis() + spanSuffix,
+							null, requestUrl, "SR", System.currentTimeMillis(), ip, null);
+				} else {
+					before = new TraceInfo(Long.parseLong(request.getHeader("trace-id")),
+							System.currentTimeMillis() + spanSuffix, Long.parseLong(request.getHeader("span-id")),
+							requestUrl, "SR", System.currentTimeMillis(), ip, null);
+				}
+
+				TraceThreadLocal.TTL.set(before);
+				logger.info(before.toString());
+
+				chain.doFilter(servletRequest, servletResponse);
+
+				after = new TraceInfo(TraceThreadLocal.TTL.get().traceID, TraceThreadLocal.TTL.get().spanID,
+						TraceThreadLocal.TTL.get().parentID, TraceThreadLocal.TTL.get().url, "SS",
+						System.currentTimeMillis(), ip, null);
+
+				logger.info(after.toString());
+			}
+		} catch (Exception e) {
+			after = new TraceInfo(TraceThreadLocal.TTL.get().traceID, TraceThreadLocal.TTL.get().spanID,
+					TraceThreadLocal.TTL.get().parentID, TraceThreadLocal.TTL.get().url, "SS",
+					System.currentTimeMillis(), ip, getStackTrace(e));
+
+			logger.info(after.toString());
 		}
-		TraceThreadLocal.TTL.set(before);
-		logger.info(before.toString());
-
-		chain.doFilter(servletRequest, servletResponse);
-
-		after = new TraceInfo(TraceThreadLocal.TTL.get().traceID, TraceThreadLocal.TTL.get().spanID,
-				TraceThreadLocal.TTL.get().parentID, TraceThreadLocal.TTL.get().url, "SS", System.currentTimeMillis());
-
-		logger.info(after.toString());
 	}
 
 	@Override
 	public void init(FilterConfig arg0) throws ServletException {
 
+	}
+
+	public static String getStackTrace(Throwable aThrowable) {
+		final Writer result = new StringWriter();
+		final PrintWriter printWriter = new PrintWriter(result);
+		aThrowable.printStackTrace(printWriter);
+		return result.toString();
 	}
 }

@@ -6,15 +6,15 @@
 	<logger name="org.apache.catalina" level="WARN" />
 	<appender name="dailyRollingFileAppender"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<File>./mydev.log</File>
+		<File>./trace.log</File>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<FileNamePattern>./mydev-log.%d{yyyy-MM-dd}.log
+			<FileNamePattern>./trace-log.%d{yyyy-MM-dd-HH-mm}.log
 			</FileNamePattern>
 			<!-- keep 30 days' worth of history -->
 			<maxHistory>30</maxHistory>
 		</rollingPolicy>
-		<encoder>
-			<Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n
+		<encoder><!-- %d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} -  -->
+			<Pattern>%msg %n
 			</Pattern>
 			<charset>UTF-8</charset> <!-- 此处设置字符集 -->
 		</encoder>
