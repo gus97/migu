@@ -13,36 +13,43 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 @RequestMapping("/mydev")
 public class HttpService {
-	
-	public final static Map<Long,FutureTask<String>> MYDEV_THREAD_INTTERUPT_FLAG = new HashMap<Long,FutureTask<String>>();
-	
+
+	public final static Map<Long, Object> MYDEV_THREAD_INTTERUPT_FLAG = new HashMap<Long, Object>();
+
 	@Autowired
-	private  HttpServletRequest request;
-	
-	//MYDEV_THREAD_INTTERUPT_FLAG 保证全局唯一
+	private HttpServletRequest request;
+
+	// MYDEV_THREAD_INTTERUPT_FLAG 保证全局唯一
+	@SuppressWarnings("unchecked")
 	@RequestMapping("/s1")
-	//打断接口
-	//http://127.0.0.1:8081/mydev/s1?MYDEV_THREAD_INTTERUPT_FLAG=100
+	// 打断接口
+	// http://127.0.0.1:8081/mydev/s1?MYDEV_THREAD_INTTERUPT_FLAG=100
 	public String s1() throws Exception {
-		
+
 		Long id = Long.parseLong(request.getParameter("MYDEV_THREAD_INTTERUPT_FLAG"));
-		FutureTask<String> future = MYDEV_THREAD_INTTERUPT_FLAG.get(id);
-		future.cancel(true);
-		
-		return id +" THREAD_INTTERUPT...";
+
+		if (MYDEV_THREAD_INTTERUPT_FLAG.get(id) instanceof FutureTask) {
+			FutureTask<String> future = (FutureTask<String>) MYDEV_THREAD_INTTERUPT_FLAG.get(id);
+			future.cancel(true);
+		}
+
+		if (MYDEV_THREAD_INTTERUPT_FLAG.get(id) instanceof Thread) {
+			Thread thread = (Thread) MYDEV_THREAD_INTTERUPT_FLAG.get(id);
+			thread.interrupt();
+		}
+
+		return id + " THREAD_INTTERUPT...";
 	}
 
 	@RequestMapping("/s2")
-	//模拟爬虫接口
-	//http://127.0.0.1:8081/mydev/s2?MYDEV_THREAD_INTTERUPT_FLAG=100
+	// 模拟爬虫接口
+	// http://127.0.0.1:8081/mydev/s2?MYDEV_THREAD_INTTERUPT_FLAG=100
 	public String s2() {
-		
+
 		Long id = Long.parseLong(request.getParameter("MYDEV_THREAD_INTTERUPT_FLAG"));
-		
 		Callable<String> callable = new Callable<String>() {
 			public String call() throws Exception {
 				try {
@@ -60,11 +67,11 @@ public class HttpService {
 		};
 
 		FutureTask<String> future = new FutureTask<String>(callable);
-		
+
 		MYDEV_THREAD_INTTERUPT_FLAG.put(id, future);
-		
+
 		new Thread(future).start();
-		
+
 		try {
 			return future.get();
 		} catch (InterruptedException e) {
@@ -72,6 +79,26 @@ public class HttpService {
 
 		} catch (ExecutionException e) {
 			return e.getMessage();
+		}
+	}
+
+	@RequestMapping("/s3")
+	// http://127.0.0.1:8081/mydev/s3?MYDEV_THREAD_INTTERUPT_FLAG=100
+	public String s3() {
+
+		Long id = Long.parseLong(request.getParameter("MYDEV_THREAD_INTTERUPT_FLAG"));
+
+		MYDEV_THREAD_INTTERUPT_FLAG.put(id, Thread.currentThread());
+
+		do1();
+
+		return "100";
+
+	}
+	
+	public static void do1() {
+		for (int i = 0; i < 1000000000; i++) {
+			System.out.println(i);
 		}
 	}
 }
