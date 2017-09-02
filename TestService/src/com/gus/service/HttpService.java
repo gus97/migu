@@ -1,6 +1,10 @@
 package com.gus.service;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Callable;
@@ -10,6 +14,8 @@ import java.util.concurrent.FutureTask;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,10 +26,13 @@ public class HttpService {
 	public final static Map<Long, Object> MYDEV_THREAD_INTTERUPT_FLAG = new HashMap<Long, Object>();
 
 	@Autowired
+	private JdbcTemplate jdbcTemplate;
+
+	@Autowired
 	private HttpServletRequest request;
 
 	// MYDEV_THREAD_INTTERUPT_FLAG 保证全局唯一
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	@RequestMapping("/s1")
 	// 打断接口
 	// http://127.0.0.1:8081/mydev/s1?MYDEV_THREAD_INTTERUPT_FLAG=100
@@ -38,7 +47,8 @@ public class HttpService {
 
 		if (MYDEV_THREAD_INTTERUPT_FLAG.get(id) instanceof Thread) {
 			Thread thread = (Thread) MYDEV_THREAD_INTTERUPT_FLAG.get(id);
-			thread.interrupt();
+			thread.stop();
+			// thread.interrupt();
 		}
 
 		return id + " THREAD_INTTERUPT...";
@@ -93,12 +103,47 @@ public class HttpService {
 		do1();
 
 		return "100";
-
 	}
-	
+
 	public static void do1() {
 		for (int i = 0; i < 1000000000; i++) {
 			System.out.println(i);
 		}
 	}
+
+	
+	//运行 http://127.0.0.1:8081/mydev/s4?MYDEV_THREAD_INTTERUPT_FLAG=100
+	//停止 http://127.0.0.1:8081/mydev/s1?MYDEV_THREAD_INTTERUPT_FLAG=100
+	@RequestMapping("/s4")
+	public String s4() {
+
+		Long id = Long.parseLong(request.getParameter("MYDEV_THREAD_INTTERUPT_FLAG"));
+
+		MYDEV_THREAD_INTTERUPT_FLAG.put(id, Thread.currentThread());
+
+		String sql = "insert into t1 values (?,?)";
+
+		List<Foo> list = new ArrayList<Foo>();
+
+		//批量插入1000000
+		for (int i = 0; i < 1000000; i++) {
+
+			list.add(new Foo(i, "插" + i));
+		}
+
+		jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+			public int getBatchSize() {
+				return list.size();
+			}
+
+			public void setValues(PreparedStatement ps, int i) throws SQLException {
+				Foo foo = (Foo) list.get(i);
+				ps.setInt(1, foo.getId());
+				ps.setString(2, foo.getName());
+			}
+		});
+
+		return "0000";
+	}
+
 }
