@@ -10,7 +10,6 @@ public class Foo {
 		this.id = id;
 		this.name = name;
 	}
-
 	public int getId() {
 		return id;
 	}

@@ -114,6 +114,7 @@ public class HttpService {
 	
 	//运行 http://127.0.0.1:8081/mydev/s4?MYDEV_THREAD_INTTERUPT_FLAG=100
 	//停止 http://127.0.0.1:8081/mydev/s1?MYDEV_THREAD_INTTERUPT_FLAG=100
+	
 	@RequestMapping("/s4")
 	public String s4() {
 

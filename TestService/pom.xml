@@ -24,6 +24,7 @@
 					<artifactId>tomcat-jdbc</artifactId>
 				</exclusion>
 			</exclusions> -->
+			
 			<version>1.5.2.RELEASE</version>
 		</dependency>
 
