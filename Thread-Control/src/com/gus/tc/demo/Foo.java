@@ -1,4 +1,4 @@
-package com.gus.service;
+package com.gus.tc.demo;
 
 public class Foo {
 

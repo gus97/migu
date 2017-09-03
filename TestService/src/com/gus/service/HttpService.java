@@ -50,6 +50,8 @@ public class HttpService {
 			thread.stop();
 			// thread.interrupt();
 		}
+		
+		
 
 		return id + " THREAD_INTTERUPT...";
 	}
@@ -122,6 +124,9 @@ public class HttpService {
 
 		MYDEV_THREAD_INTTERUPT_FLAG.put(id, Thread.currentThread());
 
+		
+		
+		//业务处理
 		String sql = "insert into t1 values (?,?)";
 
 		List<Foo> list = new ArrayList<Foo>();
