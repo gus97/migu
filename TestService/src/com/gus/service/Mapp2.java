@@ -2,6 +2,7 @@ package com.gus.service;
 
 public class Mapp2 {
 
+	@SuppressWarnings("deprecation")
 	public static void main(String[] args) throws InterruptedException {
 		// TODO Auto-generated method stub
 
@@ -46,7 +47,6 @@ class T1 extends Thread {
 		// }
 
 		Thread t = new Thread(new Runnable() {
-			public Thread t2 = null;
 
 			public void run() {
 				for (int i = 0; i < 100000000; i++) {
