@@ -6,8 +6,6 @@ import java.util.Map;
 public class Convert {
 
 	public static Map<String, String> convertMap = new HashMap<String, String>();
-
-
 	static {
 		convertMap.put("101", "0x3A");
 		convertMap.put("102", "0x2A");
